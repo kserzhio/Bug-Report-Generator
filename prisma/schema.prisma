@@ -1,0 +1,456 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+}
+
+enum SavedViewScope {
+  HISTORY
+  LIBRARY
+}
+
+enum SavedViewVisibility {
+  PRIVATE
+  WORKSPACE
+}
+
+
+enum AuditEventType {
+  WORKSPACE_UPDATED
+  MEMBER_INVITED
+  INVITE_REVOKED
+  MEMBER_ROLE_UPDATED
+  MEMBER_REMOVED
+  WORKSPACE_SWITCHED
+  BUG_SAVED
+  BUG_UPDATED
+  LIBRARY_ITEM_SAVED
+  LIBRARY_ITEM_DELETED
+  HISTORY_BULK_DELETED
+  HISTORY_BULK_ASSIGNED
+  LIBRARY_BULK_DELETED
+  SAVED_VIEW_CREATED
+  SAVED_VIEW_DELETED
+  BILLING_CHECKOUT_CREATED
+  BILLING_PORTAL_OPENED
+}
+
+model User {
+  id                       String                @id @default(cuid())
+  name                     String?
+  email                    String                @unique
+  emailVerified            DateTime?
+  passwordHash             String?
+  image                    String?
+  plan                     String                @default("free")
+  defaultWorkspaceId       String?
+  createdAt                DateTime              @default(now())
+  updatedAt                DateTime              @updatedAt
+  accounts                 Account[]
+  sessions                 Session[]
+  memberships              WorkspaceMember[]
+  sentWorkspaceInvites     WorkspaceInvite[]     @relation("WorkspaceInviteSender")
+  acceptedWorkspaceInvites WorkspaceInvite[]     @relation("WorkspaceInviteAccepter")
+  generatedBugs            GeneratedBug[]
+  reusableBugs             ReusableBug[]
+  aiEnhancements           AiEnhancementCache[]
+  subscriptions            Subscription[]
+  savedViews               SavedView[]
+  newsComments             NewsComment[]
+  workspaceAuditEvents     WorkspaceAuditEvent[] @relation("WorkspaceAuditActor")
+  evidenceAssets           EvidenceAsset[]
+
+  defaultWorkspace Workspace? @relation("DefaultWorkspace", fields: [defaultWorkspaceId], references: [id])
+}
+
+model Workspace {
+  id                        String                     @id @default(cuid())
+  name                      String
+  slug                      String                     @unique
+  defaultTools              String?
+  uiLocale                  String                     @default("en")
+  jiraBaseUrl               String?
+  jiraProjectKey            String?
+  jiraIssueType             String?
+  azureBaseUrl              String?
+  azureWorkItemType         String?
+  linearTeamId              String?
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  usersDefaulted            User[]                     @relation("DefaultWorkspace")
+  members                   WorkspaceMember[]
+  invites                   WorkspaceInvite[]
+  projects                  Project[]
+  templates                 BugTemplate[]
+  componentIssueSuggestions ComponentIssueSuggestion[]
+  generatedBugs             GeneratedBug[]
+  reusableBugs              ReusableBug[]
+  aiEnhancements            AiEnhancementCache[]
+  subscriptions             Subscription[]
+  savedViews                SavedView[]
+  auditEvents               WorkspaceAuditEvent[]
+  evidenceAssets            EvidenceAsset[]
+}
+
+model AiEnhancementCache {
+  id               String    @id @default(cuid())
+  workspaceId      String
+  userId           String
+  cacheKey         String
+  promptVersion    String
+  provider         String
+  wcagVersion      String    @default("2.2")
+  confidenceScore  Float
+  wcagCriterion    String
+  actualBehavior   String
+  expectedBehavior String
+  affectedUsers    String
+  problem          String
+  whyItMatters     String
+  howToFix         String[]
+  codeExample      String    @db.Text
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  workspace        Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, cacheKey])
+  @@index([workspaceId, createdAt])
+}
+
+model WorkspaceMember {
+  id          String    @id @default(cuid())
+  userId      String
+  workspaceId String
+  role        String    @default("OWNER")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model WorkspaceInvite {
+  id               String    @id @default(cuid())
+  workspaceId      String
+  email            String
+  role             String    @default("MEMBER")
+  token            String    @unique
+  invitedByUserId  String
+  acceptedByUserId String?
+  expiresAt        DateTime
+  acceptedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  workspace        Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy        User      @relation("WorkspaceInviteSender", fields: [invitedByUserId], references: [id], onDelete: Cascade)
+  acceptedBy       User?     @relation("WorkspaceInviteAccepter", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, email])
+  @@index([workspaceId, createdAt])
+}
+
+model SavedView {
+  id          String         @id @default(cuid())
+  workspaceId String
+  userId      String
+  scope       SavedViewScope
+  name        String
+  visibility  SavedViewVisibility @default(PRIVATE)
+  queryString String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, userId, scope])
+  @@index([workspaceId, scope, visibility, createdAt])
+  @@index([workspaceId, scope, createdAt])
+}
+
+model Project {
+  id          String         @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  bugs        GeneratedBug[]
+
+  @@index([workspaceId])
+}
+
+model BugTemplate {
+  id               String     @id @default(cuid())
+  workspaceId      String?
+  title            String
+  slug             String     @unique
+  category         String
+  description      String
+  issueType        String     @default("Accessibility")
+  severity         String
+  wcagVersion      String     @default("2.2")
+  component        String?
+  screenName       String?
+  affectedUsers    String?
+  actualBehavior   String
+  expectedBehavior String
+  wcagCriterion    String
+  toolsUsed        String
+  notes            String?
+  isSystem         Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  workspace        Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, category])
+}
+
+model ComponentIssueSuggestion {
+  id               String     @id @default(cuid())
+  workspaceId      String?
+  slug             String     @unique
+  componentKey     String
+  category         String     @default("general")
+  tags             String[]   @default([])
+  title            String
+  severity         String
+  affectedUsers    String
+  actualBehavior   String
+  expectedBehavior String
+  wcagCriterion    String
+  notes            String?
+  isSystem         Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  workspace        Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, componentKey])
+  @@index([workspaceId, category])
+  @@index([isSystem, componentKey])
+}
+
+model GeneratedBug {
+  id                  String          @id @default(cuid())
+  workspaceId         String
+  userId              String
+  projectId           String?
+  title               String
+  issueType           String
+  severity            String
+  wcagVersion         String          @default("2.2")
+  component           String
+  screenName          String
+  affectedUsers       String
+  actualBehavior      String
+  expectedBehavior    String
+  wcagCriterion       String
+  toolsUsed           String
+  reproductionSteps   String?
+  browserInfo         String?
+  operatingSystem     String?
+  deviceInfo          String?
+  assistiveTechnology String?
+  videoUrl            String?
+  screenshotUrls      String?
+  notes               String?
+  markdownContent     String          @db.Text
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  workspace           Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project             Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  evidenceAssets      EvidenceAsset[]
+
+  @@index([workspaceId, createdAt])
+  @@index([projectId])
+}
+
+model ReusableBug {
+  id                  String          @id @default(cuid())
+  workspaceId         String
+  userId              String
+  title               String
+  category            String
+  tags                String[]
+  issueType           String
+  severity            String
+  wcagVersion         String          @default("2.2")
+  component           String
+  screenName          String
+  affectedUsers       String
+  actualBehavior      String
+  expectedBehavior    String
+  wcagCriterion       String
+  toolsUsed           String
+  reproductionSteps   String?
+  browserInfo         String?
+  operatingSystem     String?
+  deviceInfo          String?
+  assistiveTechnology String?
+  videoUrl            String?
+  screenshotUrls      String?
+  notes               String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  workspace           Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evidenceAssets      EvidenceAsset[]
+
+  @@index([workspaceId, category])
+  @@index([workspaceId, createdAt])
+}
+
+model EvidenceAsset {
+  id             String        @id @default(cuid())
+  workspaceId    String
+  userId         String
+  generatedBugId String?
+  reusableBugId  String?
+  url            String
+  fileName       String
+  mimeType       String
+  sizeBytes      Int
+  createdAt      DateTime      @default(now())
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generatedBug   GeneratedBug? @relation(fields: [generatedBugId], references: [id], onDelete: SetNull)
+  reusableBug    ReusableBug?  @relation(fields: [reusableBugId], references: [id], onDelete: SetNull)
+
+  @@unique([workspaceId, userId, url])
+  @@index([workspaceId, userId, createdAt])
+  @@index([generatedBugId])
+  @@index([reusableBugId])
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String
+  workspaceId          String
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+  plan                 SubscriptionPlan   @default(FREE)
+  status               SubscriptionStatus @default(TRIALING)
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace            Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, workspaceId])
+}
+
+model StripeWebhookEvent {
+  id            String   @id @default(cuid())
+  stripeEventId String   @unique
+  eventType     String
+  status        String
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model WorkspaceAuditEvent {
+  id          String         @id @default(cuid())
+  workspaceId String
+  actorUserId String?
+  eventType   AuditEventType
+  entityType  String
+  entityId    String?
+  message     String
+  metadata    Json?
+  createdAt   DateTime       @default(now())
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  actor       User?          @relation("WorkspaceAuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, eventType, createdAt])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([identifier, expiresAt])
+}
+
+model NewsComment {
+  id        String        @id @default(cuid())
+  postId    String
+  userId    String?
+  parentId  String?
+  ipHash    String?
+  nickname  String
+  content   String        @db.Text
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  user      User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  parent    NewsComment?  @relation("NewsCommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   NewsComment[] @relation("NewsCommentReplies")
+
+  @@index([postId, createdAt])
+  @@index([userId])
+  @@index([parentId, createdAt])
+  @@index([ipHash, createdAt])
+}
+
+
+

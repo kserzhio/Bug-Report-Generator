@@ -1,0 +1,293 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 40% 98%;
+  --foreground: 222.2 47.4% 11.2%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47.4% 11.2%;
+  --primary: 197 92% 40%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 173 58% 92%;
+  --secondary-foreground: 174 80% 16%;
+  --muted: 210 40% 95%;
+  --muted-foreground: 215.4 16.3% 38%;
+  --accent: 36 100% 92%;
+  --accent-foreground: 24 91% 25%;
+  --border: 214.3 31.8% 89.4%;
+  --input: 214.3 31.8% 89.4%;
+  --ring: 197 92% 40%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --radius: 1rem;
+  --font-sans: "Manrope", "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+* {
+  @apply border-border;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  background-image:
+    linear-gradient(180deg, rgba(240, 249, 255, 0.95), rgba(248, 250, 252, 0.98)),
+    radial-gradient(circle at 0% 0%, rgba(20, 184, 166, 0.1), transparent 28%),
+    radial-gradient(circle at 100% 0%, rgba(14, 165, 233, 0.12), transparent 24%);
+  min-height: 100vh;
+}
+
+::selection {
+  @apply bg-primary text-primary-foreground;
+}
+
+.dashboard-theme {
+  --background: 222 46% 10%;
+  --foreground: 210 40% 96%;
+  --card: 221 39% 12%;
+  --card-foreground: 210 40% 96%;
+  --muted: 222 30% 16%;
+  --muted-foreground: 215 20% 70%;
+  --border: 217 30% 22%;
+  --input: 217 30% 22%;
+  --ring: 197 92% 40%;
+  background: #020817;
+}
+
+.dashboard-theme .text-slate-950 {
+  color: rgb(241 245 249) !important;
+}
+
+.dashboard-theme .text-slate-700,
+.dashboard-theme .text-slate-600 {
+  color: rgb(148 163 184) !important;
+}
+
+.dashboard-theme .border-slate-100,
+.dashboard-theme .border-slate-200 {
+  border-color: rgb(30 41 59) !important;
+}
+
+.dashboard-theme .bg-white,
+.dashboard-theme .bg-slate-50,
+.dashboard-theme .bg-slate-50\/70 {
+  background-color: rgb(15 23 42) !important;
+}
+
+.landing-theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-size: 16px;
+  --background: 11 24% 7%;
+  --foreground: 240 10% 96%;
+  --card: 217 22% 11%;
+  --card-foreground: 240 10% 96%;
+  --primary: 8 94% 46%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 221 24% 15%;
+  --secondary-foreground: 240 10% 96%;
+  --muted: 221 24% 15%;
+  --muted-foreground: 240 5% 45%;
+  --accent: 262 83% 66%;
+  --accent-foreground: 240 10% 96%;
+  --destructive: 8 94% 46%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 100% / 0.08;
+  --input: 0 0% 100% / 0.05;
+  --ring: 8 94% 46%;
+  --radius: 0.625rem;
+  --sidebar: 11 24% 7%;
+  --sidebar-foreground: 240 10% 96%;
+  --sidebar-primary: 8 94% 46%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 221 24% 15%;
+  --sidebar-accent-foreground: 240 10% 96%;
+  --sidebar-border: 0 0% 100% / 0.08;
+  --sidebar-ring: 8 94% 46%;
+  background: #0b0f14;
+  color: #f4f4f5;
+  font-family: var(--font-sans);
+}
+
+.landing-theme * {
+  border-color: hsl(var(--border));
+}
+
+.landing-theme h1,
+.landing-theme h2,
+.landing-theme h3,
+.landing-theme h4,
+.landing-theme label,
+.landing-theme button,
+.landing-theme input {
+  line-height: 1.5;
+}
+
+.landing-theme .text-slate-950 {
+  color: #f4f4f5 !important;
+}
+
+.landing-theme .text-slate-900,
+.landing-theme .text-slate-800 {
+  color: #e2e8f0 !important;
+}
+
+.landing-theme .text-slate-700,
+.landing-theme .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+.landing-theme .text-slate-500,
+.landing-theme .text-slate-400 {
+  color: #64748b !important;
+}
+
+.landing-theme .border-slate-300,
+.landing-theme .border-slate-200,
+.landing-theme .border-slate-100 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.landing-theme .bg-white,
+.landing-theme .bg-slate-50,
+.landing-theme .bg-slate-100 {
+  background-color: rgba(21, 26, 33, 0.8) !important;
+}
+
+.landing-theme .bg-cyan-100 {
+  background-color: rgba(6, 182, 212, 0.12) !important;
+}
+
+.landing-theme .text-cyan-800 {
+  color: #67e8f9 !important;
+}
+
+.landing-theme .shadow-sm,
+.landing-theme .shadow {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22) !important;
+}
+
+.dashboard-theme {
+  background: radial-gradient(1200px 600px at 100% 0%, rgba(34, 197, 246, 0.08), transparent 45%),
+    radial-gradient(1000px 500px at 0% 100%, rgba(239, 68, 68, 0.08), transparent 45%),
+    #030712;
+}
+
+.dashboard-theme .dashboard-generator .text-slate-950 {
+  color: #f4f4f5 !important;
+}
+
+.dashboard-theme .dashboard-generator .text-slate-700,
+.dashboard-theme .dashboard-generator .text-slate-600,
+.dashboard-theme .dashboard-generator .text-muted-foreground {
+  color: #8b9bb4 !important;
+}
+
+.dashboard-theme .dashboard-generator [class*="border-slate-100"],
+.dashboard-theme .dashboard-generator [class*="border-slate-200"] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dashboard-theme .dashboard-generator .bg-white,
+.dashboard-theme .dashboard-generator .bg-slate-50,
+.dashboard-theme .dashboard-generator .bg-slate-100 {
+  background-color: #111827 !important;
+}
+
+.dashboard-theme .dashboard-generator .rounded-2xl,
+.dashboard-theme .dashboard-generator .rounded-xl,
+.dashboard-theme .dashboard-generator [data-slot="card"] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dashboard-theme .dashboard-generator [data-slot="card"] {
+  background: linear-gradient(135deg, #111827 0%, #0b1220 100%) !important;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35) !important;
+}
+
+.dashboard-theme .dashboard-generator input,
+.dashboard-theme .dashboard-generator textarea,
+.dashboard-theme .dashboard-generator select {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f4f4f5 !important;
+}
+
+.dashboard-theme .dashboard-generator select,
+.dashboard-theme [data-slot="card"] select {
+  color-scheme: dark;
+}
+
+.dashboard-theme .dashboard-generator select option,
+.dashboard-theme [data-slot="card"] select option {
+  background-color: #0f172a !important;
+  color: #f4f4f5 !important;
+}
+
+.dashboard-theme .dashboard-generator input::placeholder,
+.dashboard-theme .dashboard-generator textarea::placeholder {
+  color: #64748b !important;
+}
+
+.dashboard-theme .dashboard-generator button[class*="variant-outline"],
+.dashboard-theme .dashboard-generator .border.border-slate-200 {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+.dashboard-theme .dashboard-generator pre {
+  color: #cbd5e1;
+}
+
+/* Dashboard readability hard-overrides */
+.dashboard-theme {
+  --secondary: 217 30% 16%;
+  --secondary-foreground: 210 40% 96%;
+  --primary: 8 94% 46%;
+  --primary-foreground: 0 0% 100%;
+}
+
+.dashboard-theme .text-slate-900,
+.dashboard-theme .text-slate-800 {
+  color: rgb(226 232 240) !important;
+}
+
+.dashboard-theme .text-slate-500,
+.dashboard-theme .text-slate-400,
+.dashboard-theme .text-muted-foreground {
+  color: rgb(148 163 184) !important;
+}
+
+.dashboard-theme h1,
+.dashboard-theme h2,
+.dashboard-theme h3,
+.dashboard-theme h4 {
+  color: #f4f4f5;
+}
+
+.dashboard-theme .dashboard-generator button,
+.dashboard-theme [data-slot="card"] button {
+  color: #e2e8f0;
+}
+
+.dashboard-theme .dashboard-generator .bg-primary,
+.dashboard-theme [data-slot="card"] .bg-primary,
+.dashboard-theme .dashboard-generator .text-primary-foreground,
+.dashboard-theme [data-slot="card"] .text-primary-foreground {
+  color: #ffffff !important;
+}
+
+.dashboard-theme button.border,
+.dashboard-theme .dashboard-generator button.border {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.dashboard-theme button[class*="bg-white"],
+.dashboard-theme .dashboard-generator button[class*="bg-white"] {
+  color: #e2e8f0 !important;
+}
+
