@@ -32,3 +32,4 @@ tmp_*.tsx
 
 # vercel
 .vercel/
+.vercel
