@@ -1043,7 +1043,7 @@ export function GeneratorForm({
 
   return (
     <div className="dashboard-generator grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-      <div className="space-y-6">
+      <div className="space-y-6 xl:pr-1">
         <Card>
           <CardHeader className="border-b border-slate-100">
             <div className="flex items-center justify-between gap-3">
@@ -1382,83 +1382,33 @@ export function GeneratorForm({
           mode={assistMode}
         />
       </div>
-      <OutputPanel
-        content={content}
-        previewData={{
-          component: values.component,
-          severity: values.severity,
-          issueType: values.issueType,
-          wcag: values.wcagCriterion,
-          actualBehavior: values.actualBehavior,
-          expectedBehavior: values.expectedBehavior,
-          affectedUsers: values.affectedUsers,
-          steps: values.reproductionSteps ?? "",
-          recommendations: displayedInsight.howToFix
-        }}
-        onCopy={copyToClipboard}
-        onReset={resetForm}
-        onSave={submitSave}
-        onExportMarkdown={exportMarkdown}
-        onExportText={exportPlainText}
-        onExportJson={exportJson}
-        onExportCsv={exportCsv}
-        onExportJira={exportJira}
-        onExportAzure={exportAzure}
-        onExportLinear={exportLinear}
-      />
+      <div className="min-w-0">
+        <OutputPanel
+          content={content}
+          previewData={{
+            component: values.component,
+            severity: values.severity,
+            issueType: values.issueType,
+            wcag: values.wcagCriterion,
+            actualBehavior: values.actualBehavior,
+            expectedBehavior: values.expectedBehavior,
+            affectedUsers: values.affectedUsers,
+            steps: values.reproductionSteps ?? "",
+            recommendations: displayedInsight.howToFix
+          }}
+          onCopy={copyToClipboard}
+          onReset={resetForm}
+          onSave={submitSave}
+          onExportMarkdown={exportMarkdown}
+          onExportText={exportPlainText}
+          onExportJson={exportJson}
+          onExportCsv={exportCsv}
+          onExportJira={exportJira}
+          onExportAzure={exportAzure}
+          onExportLinear={exportLinear}
+        />
+      </div>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

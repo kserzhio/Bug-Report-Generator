@@ -152,7 +152,7 @@ export function OutputPanel({
     "This issue affects keyboard users and users with visual impairments who rely on visible focus indicators to navigate through the interface.";
 
   return (
-    <div className="h-full rounded-2xl border border-white/10 bg-gradient-to-br from-[#121822] to-[#0b1220] p-6 shadow-2xl">
+    <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#121822] to-[#0b1220] p-6 shadow-2xl">
       <div className="mb-6 flex items-center justify-between gap-3">
         <h3 className="text-lg font-semibold text-white">{c.title}</h3>
         <div className="flex gap-2">
@@ -179,8 +179,8 @@ export function OutputPanel({
         </div>
       </div>
 
-      <div className="grid h-[calc(100%-56px)] gap-4 overflow-hidden xl:grid-rows-[1fr_auto]">
-        <div className="space-y-6 overflow-auto pr-2">
+      <div className="flex flex-col gap-4">
+        <div className="space-y-6 pr-2">
           <h2 className="text-[38px] font-semibold leading-tight text-white">Bug Report: {safeComponent}</h2>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -290,3 +290,4 @@ export function OutputPanel({
     </div>
   );
 }
+

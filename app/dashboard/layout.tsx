@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { DashboardBodyLock } from "@/components/layout/dashboard-body-lock";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { auth } from "@/lib/auth";
@@ -36,6 +37,7 @@ export default async function DashboardLayout({
 
   return (
     <LocaleProvider locale={locale}>
+      <DashboardBodyLock />
       <DashboardShell userName={session.user.name ?? null} userEmail={session.user.email ?? null}>
         {children}
       </DashboardShell>

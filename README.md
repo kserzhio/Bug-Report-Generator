@@ -170,5 +170,7 @@ npm run dev
 
 ## Documentation
 
+- Architecture guide (SOLID + Clean Code): `docs/architecture.md`
 - Product backlog: `docs/product-backlog.md`
 - SEO playbook: `docs/seo-playbook.md`
+

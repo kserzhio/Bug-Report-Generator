@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 
-import { useI18n } from "@/components/providers/locale-provider";
+import { useI18n, useLocale } from "@/components/providers/locale-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -54,7 +54,13 @@ export function SignInForm({
 }) {
   const [state, formAction, pending] = useActionState(signInAction, initialState);
   const t = useI18n();
+  const locale = useLocale();
   const oauthErrorMessage = resolveAuthErrorMessage(authErrorCode);
+  const signUpHref = inviteToken
+    ? `/sign-up?invite=${encodeURIComponent(inviteToken)}${next ? `&next=${encodeURIComponent(next)}` : ""}`
+    : next
+      ? `/sign-up?next=${encodeURIComponent(next)}`
+      : "/sign-up";
 
   return (
     <Card className="h-full w-full max-w-md border-white/10 bg-[#151A21]/95 text-white shadow-2xl backdrop-blur">
@@ -133,9 +139,14 @@ export function SignInForm({
           <Button className="w-full bg-gradient-to-r from-[#E41F07] to-[#B91804] text-white hover:opacity-95" disabled={pending}>
             {pending ? t.auth.signingIn : t.auth.continue}
           </Button>
+          <p className="text-center text-sm text-zinc-400">
+            {locale === "uk" ? "Ще не маєте акаунта?" : "Don\'t have an account?"}{" "}
+            <Link href={signUpHref} className="font-medium text-[#A78BFA] hover:text-[#C4B5FD]">
+              {t.auth.createAccount}
+            </Link>
+          </p>
         </form>
       </CardContent>
     </Card>
   );
 }
-

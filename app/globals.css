@@ -291,3 +291,41 @@ body {
   color: #e2e8f0 !important;
 }
 
+
+/* Dashboard scroll policy: lock window scroll, scroll only dashboard regions */
+html.dashboard-lock-scroll,
+body.dashboard-lock-scroll {
+  overflow: hidden;
+}
+
+/* Optional custom scrollbar styling for dashboard */
+.dashboard-main-scroll,
+.dashboard-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.6) transparent;
+}
+
+.dashboard-main-scroll::-webkit-scrollbar,
+.dashboard-sidebar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dashboard-main-scroll::-webkit-scrollbar-track,
+.dashboard-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-main-scroll::-webkit-scrollbar-thumb,
+.dashboard-sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(71, 85, 105, 0.85), rgba(51, 65, 85, 0.95));
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  background-clip: padding-box;
+}
+
+.dashboard-main-scroll::-webkit-scrollbar-thumb:hover,
+.dashboard-sidebar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.8), rgba(71, 85, 105, 0.95));
+  background-clip: padding-box;
+}
